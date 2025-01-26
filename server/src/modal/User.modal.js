@@ -21,11 +21,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Password is required "]
     },
-    IAm: {
+    role: {
         type: String,
         required: true,
     },
-    refeshToken: {
+    refreshToken: {
         type: String
     }
 

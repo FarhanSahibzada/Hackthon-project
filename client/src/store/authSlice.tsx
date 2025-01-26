@@ -4,7 +4,7 @@ type UserInfo = {
   _id: string;
   username: string;
   email: string;
-  IAm : string 
+  role : string 
 };
 
 type InitialState = {

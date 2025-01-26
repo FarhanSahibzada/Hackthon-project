@@ -1,25 +1,49 @@
 import React from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { LockIcon, MailIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import axios from 'axios'
+import { userLogin } from '@/store/authSlice'
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Button } from '@/components/ui/button'
+
 
 interface formData {
     username: string,
     email: string,
     password: string,
+    role: string,
 }
 
-function Login() {
+function SingIn() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [loading, setLoading] = React.useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm<formData>()
+    const [selectedRole, setSelectedRole] = React.useState("user");
+    const { register, handleSubmit, control, formState: { errors } } = useForm<formData>()
 
     const log = async (data: formData) => {
-        console.log(data)
-        // Here you can add the actual login logic, like calling an API or dispatching redux actions
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/login-user`, data,
+                { withCredentials: true });
+            if (response && response.data) {
+                const res = response.data.data.user
+                dispatch(userLogin(res));
+                navigate('/Home');
+            } else {
+                console.log("Can't get any data");
+            }
+        } catch (error) {
+            console.error("Login failed", error);
+            alert('Login failed. Please check your credentials and try again.');
+        }
     }
 
     return (
@@ -83,10 +107,43 @@ function Login() {
                         </div>
                     </div>
 
+                    <div>
+                        <Controller
+                            name="role"
+                            control={control}
+                            rules={{ required: "Role is required" }}
+                            render={({ field }) => (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button className="w-full text-left">
+                                            {selectedRole || "Select Role"}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-full">
+                                        {["Admin", "User"].map((role) => (
+                                            <DropdownMenuItem
+                                                key={role}
+                                                onClick={() => {
+                                                    setSelectedRole(role);
+                                                    field.onChange(role);
+                                                }}
+                                            >
+                                                {role}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+                        />
+                        {errors.role && (
+                            <p className="text-red-500 text-sm">{errors.role.message}</p>
+                        )}
+                    </div>
+
                     {/* Forgot Password Link */}
                     <div className="flex items-center justify-end">
                         <div className="text-sm">
-                            <a  className="font-medium text-primary hover:text-primary/80 transition-colors">
+                            <a className="font-medium text-primary hover:text-primary/80 transition-colors">
                                 Forgot your password?
                             </a>
                         </div>
@@ -120,4 +177,4 @@ function Login() {
     )
 }
 
-export default Login;
+export default SingIn;

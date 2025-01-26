@@ -1,6 +1,19 @@
 import MaulanaSaab from '@/assets/mulana saab.jpg'
+import { RootState } from '@/store/store';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Home() {
+    const userdata = useSelector((state: RootState) => state.auth.userLogin)
+    const navigate = useNavigate()
+
+    // useEffect(() => {
+    //     if (!userdata) {
+    //         navigate('/sign-in')
+    //     }
+    // }, [userdata , navigate])
+
     return (
         <div className="-mt-10 min-h-screen flex items-center justify-center bg-gray-50">
             <div className="flex flex-col md:flex-row items-center md:justify-between w-full max-w-7xl px-6">
@@ -14,10 +27,10 @@ export default function Home() {
                         The largest NGO offering free{" "}
                         <span className="font-bold text-blue-600">healthcare and much more!</span>
                     </p>
-                    <button className="px-6 py-2 w-40  bg-blue-500 text-white rounded-lg hover:bg-blue-400 
+                    <Link to={`/support/${userdata?._id}`} className="px-6 py-2 w-40  bg-blue-500 text-white rounded-lg hover:bg-blue-400 
                     transition-all duration-200 ease-in-out font-semibold ">
-                        Get Started
-                    </button>
+                        Get Support
+                    </Link>
                 </div>
 
                 {/* Right Section: Images */}

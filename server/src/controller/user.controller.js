@@ -7,7 +7,7 @@ const generateAccessTokenAndResfreshToken = async (userId) => {
         const user = await User.findById(userId)
         const AccessToken = user.generatedAccessToken()
         const RefrehToken = user.generatedRefreshToken()
-        user.refeshToken = RefrehToken;
+        user.refreshToken = RefrehToken;
         await user.save({ validateBeforeSave: false })
 
         return {
@@ -22,7 +22,7 @@ const generateAccessTokenAndResfreshToken = async (userId) => {
 
 const registerUser = Asynchandler(async (req, res) => {
 
-    const { username, email, password, IAm } = req.body;
+    const { username, email, password, role} = req.body;
 
     if (
         [username, email, password].some((field) => field?.trim() == "")
@@ -45,7 +45,7 @@ const registerUser = Asynchandler(async (req, res) => {
         email,
         password,
         username: username.toLowerCase(),
-        IAm,
+        role,
     })
 
     const createdbyuser = await User.findById(user._id).select(
@@ -54,7 +54,6 @@ const registerUser = Asynchandler(async (req, res) => {
 
     if (!createdbyuser) {
         throw new Error("something went while registering the user");
-
     }
 
     return res.status(200).json(
@@ -65,7 +64,7 @@ const registerUser = Asynchandler(async (req, res) => {
 
 const loginUser = Asynchandler(async (req, res) => {
 
-    const { email, username, password, IAm } = req.body
+    const { email, username, password, role } = req.body
 
 
     if (!username && !email) {
@@ -176,12 +175,38 @@ const refreshAccessToken = Asynchandler(async (req, res) => {
 })
 
 const getCurrentUser = Asynchandler(async (req, res) => {
+    if(!req.user){
+        return res.status(401)
+        throw new Error("no user found");
+    }
 
     return res
         .status(200)
         .json(new ApiResponse(
             200,
-            req?.user,
+            req.user,
+            "currentUser was found "
+        ))
+})
+
+const findUserWithId = Asynchandler(async (req, res) => {
+    const {id} = req.params;
+
+    if(!id){
+        throw new Error("cannot get the id")
+    }
+
+    const user = await User.findById({_id : id}).select("-refreshToken -passowrd")
+
+    if(!user){
+        throw new Error("error when find the user");
+        
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            user,
             "currentUser was found "
         ))
 })
@@ -191,5 +216,6 @@ export {
     loginUser,
     logoutUser,
     refreshAccessToken,
-    getCurrentUser
+    getCurrentUser,
+    findUserWithId
 }
