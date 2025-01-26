@@ -17,6 +17,7 @@ interface formData {
 }
 
 function SignUp() {
+
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = React.useState(false)
@@ -40,7 +41,7 @@ function SignUp() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center shadow-xl bg-gray-50 px-4 sm:px-6 lg:px-8">
+        <div className="mt-10 py-4 flex items-center justify-center shadow-xl bg-gray-50 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div className="text-center">
                     <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
@@ -51,7 +52,7 @@ function SignUp() {
                 <form onSubmit={handleSubmit(signup)} className="space-y-8">
                     <div>
                         <div className='relative'>
-                            <Contact className="absolute left-3 top-1/2 transform -translate-y-[-37%] text-gray-400" size={20} />
+                            <Contact className="absolute left-3 top-1/2 transform -translate-y-[37%] text-gray-400" size={20} />
                             <Input
                                 type="text"
                                 {...register("username", { required: "Username is required" })}
@@ -64,7 +65,7 @@ function SignUp() {
 
                     <div>
                         <div className="relative">
-                            <MailIcon className="absolute left-3 top-1/2 transform -translate-y-[-40%] text-gray-400" size={20} />
+                            <MailIcon className="absolute left-3 top-1/2 transform -translate-y-[40%] text-gray-400" size={20} />
                             <Input
                                 placeholder="Email address"
                                 type="email"
@@ -84,9 +85,9 @@ function SignUp() {
 
                     <div>
                         <div className="relative">
-                            <LockIcon className="absolute left-3 top-1/2 transform -translate-y-[-40%] text-gray-400" size={20} />
+                            <LockIcon className="absolute left-3 top-1/2 transform -translate-y-[40%] text-gray-400" size={20} />
                             <Input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 {...register("password", { required: "Password is required", minLength: { value: 3, message: "Password must be at least 3 characters" }, maxLength: { value: 8, message: "Password must not exceed 8 characters" } })}
                                 className="pl-10 focus:ring-primary rounded-lg shadow-md"
                                 placeholder="Password"
@@ -94,7 +95,7 @@ function SignUp() {
                             {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                             <button
                                 type="button"
-                                className="absolute right-3 top-1/2 transform -translate-y-[-40%] text-gray-400"
+                                className="absolute right-3 top-1/2 transform -translate-y-[40%] text-gray-400"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}

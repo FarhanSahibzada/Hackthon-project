@@ -17,13 +17,12 @@ function App() {
       const response = await axios.get(`${BACKEND_URL}/api/user/current-user`, {
         withCredentials: true,
       });
-
       console.log(response);
     } catch (error) {
       console.log("Error fetching current user:", error);
       throw error;
     }
-  }, []);
+  }, [BACKEND_URL]);
 
   const refreshAccessToken = useCallback(async () => {
     try {
@@ -46,6 +45,7 @@ function App() {
       setLoading(true);
       try {
         await fetchUser();
+  
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 404 || error.response?.status === 401) {

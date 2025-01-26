@@ -175,11 +175,7 @@ const refreshAccessToken = Asynchandler(async (req, res) => {
 })
 
 const getCurrentUser = Asynchandler(async (req, res) => {
-    if(!req.user){
-        return res.status(401)
-        throw new Error("no user found");
-    }
-
+    
     return res
         .status(200)
         .json(new ApiResponse(

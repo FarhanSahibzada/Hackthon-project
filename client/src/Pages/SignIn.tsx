@@ -50,7 +50,7 @@ function SingIn() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center shadow-xl bg-gray-50 px-4 sm:px-6 lg:px-8">
+        <div className=" mt-8 py-4 flex items-center justify-center shadow-xl bg-gray-50 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div className="text-center">
                     <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Welcome back</h2>
@@ -63,8 +63,8 @@ function SingIn() {
                 <form onSubmit={handleSubmit(log)} className="space-y-6">
                     {/* Email or Username Field */}
                     <div>
-                        <div className="relative">
-                            <MailIcon className="absolute left-3 top-1/2 transform -translate-y-[-40%] text-gray-400" size={20} />
+                        <div className="relative ">
+                            <MailIcon className="absolute left-3 top-1/2 transform -translate-y-[40%] text-gray-400" size={20} />
                             <Input
                                 placeholder="Email address"
                                 type="email"
@@ -87,7 +87,7 @@ function SingIn() {
                     {/* Password Field */}
                     <div>
                         <div className="relative">
-                            <LockIcon className="absolute left-3 top-1/2 transform -translate-y-[-40%] text-gray-400" size={20} />
+                            <LockIcon className="absolute left-3 top-1/2 transform -translate-y-[40%] text-gray-400" size={20} />
                             <Input
                                 type="password"
                                 {...register("password", {
@@ -170,7 +170,7 @@ function SingIn() {
 
                 <p className="text-center text-sm text-gray-600">
                     Don't Have an Account?{' '}
-                    <Link to={"/Signup"} className="font-medium text-primary hover:text-primary/80 transition-colors">
+                    <Link to={"/Sign-up"} className="font-medium text-primary hover:text-primary/80 transition-colors">
                         Sign Up
                     </Link>
                 </p>
