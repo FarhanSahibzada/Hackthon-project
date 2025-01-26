@@ -3,7 +3,6 @@ import Navber from "./components/Navber"
 import axios, { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
-import { userLogin } from "./store/authSlice";
 
 
 function App() {
@@ -18,14 +17,13 @@ function App() {
       const response = await axios.get(`${BACKEND_URL}/api/user/current-user`, {
         withCredentials: true,
       });
-  
-      console.log(response.data)
 
+      console.log(response);
     } catch (error) {
       console.log("Error fetching current user:", error);
       throw error;
     }
-  }, [dispatch, navigate, BACKEND_URL]);
+  }, []);
 
   const refreshAccessToken = useCallback(async () => {
     try {

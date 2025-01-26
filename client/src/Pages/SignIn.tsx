@@ -31,14 +31,17 @@ function SingIn() {
 
     const log = async (data: formData) => {
         try {
+            setLoading(true)
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/user/login-user`, data,
                 { withCredentials: true });
             if (response && response.data) {
                 const res = response.data.data.user
                 dispatch(userLogin(res));
                 navigate('/Home');
+                setLoading(false)
             } else {
                 console.log("Can't get any data");
+                setLoading(false)
             }
         } catch (error) {
             console.error("Login failed", error);

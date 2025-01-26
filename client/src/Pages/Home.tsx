@@ -8,11 +8,11 @@ export default function Home() {
     const userdata = useSelector((state: RootState) => state.auth.userLogin)
     const navigate = useNavigate()
 
-    // useEffect(() => {
-    //     if (!userdata) {
-    //         navigate('/sign-in')
-    //     }
-    // }, [userdata , navigate])
+    useEffect(() => {
+        if (!userdata) {
+            navigate('/sign-in')
+        }
+    }, [userdata , navigate])
 
     return (
         <div className="-mt-10 min-h-screen flex items-center justify-center bg-gray-50">
