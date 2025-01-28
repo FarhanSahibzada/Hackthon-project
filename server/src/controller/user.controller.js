@@ -1,4 +1,5 @@
 import { User } from '../modal/User.modal.js'
+import { ApiError } from '../utlis/ApiError.js'
 import { ApiResponse } from '../utlis/ApiResponse.js'
 import { Asynchandler } from '../utlis/Asynchandler.js'
 
@@ -27,7 +28,7 @@ const registerUser = Asynchandler(async (req, res) => {
     if (
         [username, email, password].some((field) => field?.trim() == "")
     ) {
-        throw new Error("409, 'All fields are required '");
+        throw new ApiError(401 , "can not getting the data ");
     }
 
     const existedUser = await User.findOne({
@@ -93,7 +94,7 @@ const loginUser = Asynchandler(async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 7 * 24 * 60 * 60 * 1000,
-        sameSite: 'None'
+        sameSite: process.env.NODE_ENV == "production" ? "None" : "Lax"
     }
 
     return res
@@ -137,11 +138,11 @@ const refreshAccessToken = Asynchandler(async (req, res) => {
     const Token = await req.cookies?.refreshToken;
     if (!Token) {
         throw new Error("unAuthorized Token");
-
     }
-
     try {
+        console.log(Token)
         const verifyToken = jwt.verify(Token, process.env.REFRESH_TOKEN_SECRET)
+        console.log(verifyToken)
         const user = await User.findOne(verifyToken?._id)
 
         if (!user) {
@@ -154,7 +155,7 @@ const refreshAccessToken = Asynchandler(async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 7 * 24 * 60 * 60 * 1000,
-            sameSite: 'None'
+            sameSite: process.env.NODE_ENV == 'production' ? "None" : "Lax"
         }
 
         return res

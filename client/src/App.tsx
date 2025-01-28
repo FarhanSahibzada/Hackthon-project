@@ -3,6 +3,7 @@ import Navber from "./components/Navber"
 import axios, { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
+import { userLogin } from "./store/authSlice";
 
 
 function App() {
@@ -14,21 +15,22 @@ function App() {
 
   const fetchUser = useCallback(async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/user/current-user`, {
+      const response = await axios.get(`${BACKEND_URL}user/current-user`, {
         withCredentials: true,
       });
-      console.log(response);
+      if(response && response.data){
+        dispatch(userLogin(response.data?.data))
+        navigate('/Home')
+      }
     } catch (error) {
       console.log("Error fetching current user:", error);
       throw error;
     }
-  }, [BACKEND_URL]);
+  }, [BACKEND_URL , navigate , dispatch]);
 
   const refreshAccessToken = useCallback(async () => {
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/user/refresh-token`,
-        {},
+      const response = await axios.get(`${BACKEND_URL}/user/refresh-token`,
         { withCredentials: true }
       );
       if (response.status === 200) {
@@ -45,7 +47,6 @@ function App() {
       setLoading(true);
       try {
         await fetchUser();
-  
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 404 || error.response?.status === 401) {

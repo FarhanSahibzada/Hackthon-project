@@ -4,11 +4,15 @@ import Jwt from "jsonwebtoken";
 import { Asynchandler } from "../utlis/Asynchandler.js";
 
 const generateUniqueToken = async (username) => {
+    try{
 
-    const token = Jwt.sign({ name: username }, process.env.SECRET_KEY_FOR_Token);
-
-    return {
-        token
+        const token = Jwt.sign({ name: username }, process.env.SECRET_KEY_FOR_Token);
+        
+        return {
+            token
+        }
+    }catch(error){
+        console.log("error when creating a token")
     }
 }
 

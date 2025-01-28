@@ -26,9 +26,9 @@ import RecipationRouter from './routes/recipation.route.js'
 import DepartmentRouter from './routes/department.route.js'
 
 
-app.use("/api/user" , UserRouter )
-app.use("/api/recipation" , RecipationRouter )
-app.use("/api/department" , DepartmentRouter )
+app.use("/api/v1/user" , UserRouter )
+app.use("/api/v1/recipation" , RecipationRouter )
+app.use("/api/v1/department" , DepartmentRouter )
 
 
 
