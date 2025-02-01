@@ -109,8 +109,8 @@ const loginUser = Asynchandler(async (req, res) => {
 })
 
 const logoutUser = Asynchandler(async (req, res) => {
-
-    const user = await User.findByIdAndUpdate(req.user._id,
+    
+    const user = await User.findByIdAndUpdate(req.user?._id,
         {
             $set: {
                 refeshToken: null

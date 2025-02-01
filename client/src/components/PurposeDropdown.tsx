@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Control, Controller } from "react-hook-form";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { FormData } from "@/Pages/Support";
+import { FormData } from "@/userPages/Support";
 
 interface purposeProps {
     control: Control<FormData>,

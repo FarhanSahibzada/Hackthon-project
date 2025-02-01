@@ -1,11 +1,27 @@
 import saylaniImage from '@/assets/saylanilog.png'
+import { userLogout } from '@/store/authSlice'
 import { RootState } from '@/store/store'
-import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Navber() {
-
+  const navigate = useNavigate()
   const userStatus = useSelector((state: RootState) => state.auth.userLogin)
+  const dispatch = useDispatch()
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}user/logout-user`, {}, { withCredentials: true })
+      if (res.status == 200) {
+        dispatch(userLogout());
+        navigate('/sign-in')
+      }
+    } catch (error) {
+      console.log("error when doing logout", error)
+    }
+  }
+
   return (
     <div className="navbar bg-base-100 border-b-4 border-slate-200 relative z-10">
       <div className="navbar-start flex items-center">
@@ -46,11 +62,14 @@ export default function Navber() {
       </div>
       <div className="navbar-end gap-2  pe-3">
         {userStatus ? (
-          <Link to={'/'} className="px-3 py-1.5 bg-orange-400 text-white font-semibold ">Donate Now</Link>
+          <>
+            <Link to={'/'} className="px-3 py-1.5 bg-orange-400 text-white font-semibold ">Donate Now</Link>
+            <button onClick={handleLogout} className="px-3 py-1.5 cursor-pointer bg-gray-700 text-white font-semibold ">Logout</button>
+          </>
         ) : (
           <>
-            <Link to={'/sign-up'} className="px-3 py-1.5 bg-gray-700 text-white font-semibold ">Sign Up</Link>
-            <Link to={'sign-in'} className="px-3 py-1.5  text-white font-semibold ">Sign In</Link>
+            <Link to={'/sign-up'} className="px-3 py-1.5 bg-orange-400 text-white font-semibold ">Sign Up</Link>
+            <Link to={'sign-in'} className="px-3 py-1.5 bg-gray-700 text-white font-semibold ">Sign In</Link>
           </>
         )}
       </div>

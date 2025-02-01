@@ -22,12 +22,12 @@ app.use(cookieParser())
 
 // here coming routes 
 import UserRouter from './routes/user.route.js'
-import RecipationRouter from './routes/recipation.route.js'
+import RecipationRouter from './routes/seeker.route.js'
 import DepartmentRouter from './routes/department.route.js'
 
 
 app.use("/api/v1/user" , UserRouter )
-app.use("/api/v1/recipation" , RecipationRouter )
+app.use("/api/v1/seeker" , RecipationRouter )
 app.use("/api/v1/department" , DepartmentRouter )
 
 

@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import AlertBox from "@/components/AlertBox";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import PurposeDropdown from "@/components/PurposeDropdown";
+import domtoimage from 'dom-to-image'
+import saylaniImage from '@/assets/saylanilog.png'
 
 export interface FormData {
     name: string;
@@ -32,20 +34,27 @@ function Support() {
     const navigate = useNavigate()
     const [alertOpen, setAlertOpen] = useState(false)
     const userdata = useSelector((state: RootState) => state.auth.userLogin)
+    const [seekerData, setSeekerData] = useState<FormData | null>(null)
+    const [qrcode, setQrcode] = useState('')
+    const cardRef = useRef(null)
 
     useEffect(() => {
-        if (isOpen == false) {
-            navigate('/Home')
+        if (!seekerData) {
+            if (isOpen == false) {
+                navigate('/Home')
+            }
         }
-    }, [isOpen, navigate])
+    }, [isOpen, navigate, seekerData])
 
     const onSubmit = async (data: FormData) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}recipation/register`, data,
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}seeker/register`, data,
                 { withCredentials: true }
             )
-            if (response.status == 200) {
+            if (response && response.data) {
                 console.log("seeker is successfully updated")
+                setSeekerData(response.data?.data)
+                setIsOpen(false)
                 setAlertOpen(true)
             }
         } catch (error) {
@@ -61,11 +70,32 @@ function Support() {
         }
     });
 
+    useEffect(() => {
+        const code = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + seekerData?.token;
+        setQrcode(code);
+    }, [seekerData])
+
+    const handledownloadBtn = () => {
+        if (cardRef.current) {
+            domtoimage.toPng(cardRef.current)
+                .then((dataUrl: string) => {
+                    const link = document.createElement("a");
+                    link.href = dataUrl;
+                    console.log(dataUrl);
+                    link.download = seekerData?.name || "";
+                    link.click();
+                    navigate('/Home')
+                }).catch((error: string) => {
+                    console.log("error when downloading the card ", error)
+                })
+        }
+    }
+
     return (
         <>
-            <AlertBox title="Registerd" description="Your response is successfully registered" isopen={alertOpen} setIsOpen={setAlertOpen} />
+            <AlertBox title="Registerd" description="Your response is successfully registered please download your Slip and check you email" isopen={alertOpen} setIsOpen={setAlertOpen} />
             <Dialog open={isOpen} onOpenChange={setIsOpen} >
-                <DialogContent  className="max-h-[80vh] overflow-y-auto ">
+                <DialogContent className="max-h-[80vh] overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>Seeker Information</DialogTitle>
                         <DialogDescription>
@@ -106,11 +136,11 @@ function Support() {
                                         required: "CNIC is required",
                                         minLength: {
                                             value: 13,
-                                            message: "Minimum length must be 13 characters"
+                                            message: "Minimum length must be 13 Numbers"
                                         },
                                         maxLength: {
                                             value: 13,
-                                            message: "Maximum length must be 13 characters"
+                                            message: "Maximum length must be 13 Numbers"
                                         }
                                     })}
                             />
@@ -128,7 +158,11 @@ function Support() {
                                         required: "Phone number is required",
                                         minLength: {
                                             value: 11,
-                                            message: "Minimum length must be 13 characters"
+                                            message: "Minimum length must be 11 Numbers"
+                                        },
+                                        maxLength: {
+                                            value: 12,
+                                            message: "Maximum length must be 12  Numbers"
                                         }
                                     })}
                             />
@@ -161,6 +195,37 @@ function Support() {
                     </form>
                 </DialogContent>
             </Dialog>
+            {seekerData && (
+                <div className="flex  justify-center items-center  min-h-screen -mt-8 ">
+                    <div className="max-w-6xl  shadow-xl" >
+                        <div className="w-full flex flex-col md:flex-row py-20 rounded-2xl px-10  gap-6 bg-white relative"
+                            ref={cardRef}
+                        >
+                            <img src={saylaniImage} alt=""
+                                className="absolute w-40 top-4 left-4"
+                            />
+                            <figure className="mt-6">
+                                <img src={qrcode || ""} alt=""
+                                    className="w-full"
+                                />
+                            </figure>
+                            <div className="mt-6">
+                                <h1 className="font-bold mb-1">Name :  <span className="font-semibold text-neutral-400 ms-1">{seekerData?.name}</span> </h1>
+                                <h1 className="font-bold mb-1">email :  <span className="font-semibold text-neutral-400 ms-1">{seekerData?.email}</span> </h1>
+                                <h1 className="font-bold mb-1">CNiC :  <span className="font-semibold text-neutral-400 ms-1">{seekerData?.Cnic}</span> </h1>
+                                <h1 className="font-bold mb-1">phoneNumber :  <span className="font-semibold text-neutral-400 ms-1">{seekerData?.Cnic}</span> </h1>
+                                <h1 className="font-bold mb-1">Address :  <span className="font-semibold text-neutral-400 ms-1">{seekerData?.address}</span> </h1>
+                            </div>
+                        </div>
+                        <div className="text-right mb-4 me-4">
+                            <Button
+                                onClick={handledownloadBtn}>
+                                Download
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

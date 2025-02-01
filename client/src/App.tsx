@@ -1,32 +1,35 @@
 import { useCallback, useEffect, useState } from "react"
 import Navber from "./components/Navber"
 import axios, { AxiosError } from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import { userLogin } from "./store/authSlice";
+import { RootState } from "./store/store";
 
 
 function App() {
-  const [loading , setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const dispatch = useDispatch();
   const navigate = useNavigate()
-
+  const userData = useSelector((state: RootState) => state.auth.userLogin)
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   const fetchUser = useCallback(async () => {
     try {
+      setLoading(true)
       const response = await axios.get(`${BACKEND_URL}user/current-user`, {
         withCredentials: true,
       });
-      if(response && response.data){
+      if (response && response.data) {
         dispatch(userLogin(response.data?.data))
-        navigate('/Home')
+        setLoading(false)
       }
     } catch (error) {
+      setLoading(false)
       console.log("Error fetching current user:", error);
       throw error;
     }
-  }, [BACKEND_URL , navigate , dispatch]);
+  }, [BACKEND_URL, dispatch]);
 
   const refreshAccessToken = useCallback(async () => {
     try {
@@ -44,8 +47,8 @@ function App() {
 
   useEffect(() => {
     const getUserData = async () => {
-      setLoading(true);
       try {
+        setLoading(true);
         await fetchUser();
       } catch (error) {
         if (error instanceof AxiosError) {
@@ -69,13 +72,22 @@ function App() {
     getUserData();
   }, [navigate, dispatch, fetchUser, refreshAccessToken]);
 
- 
- 
+
+  useEffect(() => {
+    if (userData?.role === "user") {
+      navigate("/Home");
+    } else if (userData?.role === "department") {
+      navigate("/user-data");
+    } else if (userData?.role === "admin") {
+      navigate("/admin");
+    } 
+  }, [userData, navigate])
+
   return !loading ? (
     <div className='w-full flex gap-1 flex-col-reverse  bg-white'>
       <div className='w-full'>
-        <Navber/>
-        <Outlet/>
+        <Navber />
+        <Outlet />
       </div>
     </div>
   ) : (

@@ -1,16 +1,18 @@
 import { Recipation } from "../modal/Seeker.modal.js";
 import { ApiResponse } from "../utlis/ApiResponse.js";
-import Jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { Asynchandler } from "../utlis/Asynchandler.js";
+import { ApiError } from "../utlis/ApiError.js";
+import sendEmail from "../utlis/sendEmail.js";
 
-const generateUniqueToken = async (username) => {
+const generateUniqueToken = async (nic) => {
     try{
-
-        const token = Jwt.sign({ name: username }, process.env.SECRET_KEY_FOR_Token);
+        const token = jwt.sign({ Cnic: nic }, process.env.SECRET_KEY_FOR_Token);
         
         return {
             token
         }
+
     }catch(error){
         console.log("error when creating a token")
     }
@@ -23,14 +25,13 @@ const createSeeker = Asynchandler(async (req, res) => {
     if (
         [name, email, phoneNumber, Cnic, address, purpose].some((field) => field?.trim() == "")
     ) {
-        throw new Error(401, "409, 'All fields are required '");
+        throw new Error(401, " All fields are required ");
     }
 
-    const { token } = generateUniqueToken(name)
+    const {token}  = await generateUniqueToken(Cnic)
 
     if (!token) {
-        res.status(401);
-        throw new Error( "cen not getting the token");
+        throw new ApiError(403 , "Can not getting the token ")
     }
 
     const seeker = await  Recipation.create({
@@ -42,6 +43,8 @@ const createSeeker = Asynchandler(async (req, res) => {
         token: token,
         purpose,
     })
+
+    sendEmail(email)
 
     const findseeker  = await Recipation.findById(seeker._id)
     

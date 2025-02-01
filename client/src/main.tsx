@@ -2,14 +2,20 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import Home from './Pages/Home.tsx'
+import Home from './userPages/Home.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import AuthLayout from './components/AuthLayout/AuthLayout.tsx'
-import Support from './Pages/Support.tsx'
-import SignUp from './Pages/SignUp.tsx'
-import SingIn from './Pages/SignIn.tsx'
+import Support from './userPages/Support.tsx'
+import SignUp from './userPages/SignUp.tsx'
+import SingIn from './userPages/SignIn.tsx'
 import { Provider } from 'react-redux'
 import Store from './store/store.tsx'
+import Proctected from './components/Protected/Proctected.tsx'
+import UserData from './DepartmentPages/UserData.tsx'
+import Dashboard from './AdminPages/Dashboard.tsx'
+
+
+//  work on the procteded routes 
 
 const route = createBrowserRouter([
   {
@@ -17,12 +23,14 @@ const route = createBrowserRouter([
     element: <App />,
     children: [
       {
-        index: true,
-        element: <Home />,
-      },
-      {
         path: "/Home",
-        element: <Home />
+        element: (
+          <AuthLayout authentication >
+            <Proctected allowedRoles={["user"]}>
+              <Home />
+            </Proctected>
+          </AuthLayout >
+        )
       },
       {
         path: '/sign-in',
@@ -42,9 +50,33 @@ const route = createBrowserRouter([
       },
       {
         path: 'support/:id',
-        element: <Support />
+        element: (
+          <AuthLayout authentication >
+          <Proctected allowedRoles={["user"]}>
+            <Support />
+          </Proctected>
+        </AuthLayout >
+        )
       },
-
+      {
+        path: 'user-data',
+        element: (
+          <AuthLayout authentication >
+          <Proctected allowedRoles={["department"]}>
+            <UserData/>
+          </Proctected>
+        </AuthLayout >
+        )
+      },{
+          path: 'dashboard',
+          element: (
+            <AuthLayout authentication >
+            <Proctected allowedRoles={["admin"]}>
+              <Dashboard/>
+            </Proctected>
+          </AuthLayout >
+          )
+      },
     ]
   }
 ])

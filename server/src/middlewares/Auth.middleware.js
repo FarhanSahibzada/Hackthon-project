@@ -13,7 +13,7 @@ const verifyToken = Asynchandler(async (req , _, next )=>{
     }
     try {
         const verify = jwt.verify(Token, process.env.ACCESS_TOKEN_SCRECT);
-        const user =  await User.findById(verify.id)
+        const user =  await User.findById(verify?.id)
     
         if (!user) {
             throw new ApiError(401 , "can not find the user");
