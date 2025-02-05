@@ -33,7 +33,7 @@ function App() {
 
   const refreshAccessToken = useCallback(async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL} user/refresh-token`,
+      const response = await axios.get(`${BACKEND_URL}user/refresh-token`,
         { withCredentials: true }
       );
       if (response.status === 200) {
